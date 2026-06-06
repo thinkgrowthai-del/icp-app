@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICP Builder — GTM Foundations | ThinkGrowth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+/* ── BRAND TOKENS ─────────────────────────────────────────────────────────── */
+:root {
+  --teal:        #013D4C;
+  --mint:        #00FFB5;
+  --mint-dim:    rgba(0,255,181,0.10);
+  --mint-border: rgba(0,255,181,0.22);
+  --mint-hover:  rgba(0,255,181,0.16);
+  --navy:        #02081B;
+  --lime:        #DCFF63;
+  --white:       #FFFFFF;
+  --surface:     rgba(255,255,255,0.04);
+  --surface-2:   rgba(255,255,255,0.07);
+  --muted:       rgba(255,255,255,0.55);
+  --soft:        rgba(255,255,255,0.80);
+  --input-bg:    rgba(0,0,0,0.22);
+  --gold:        #F59E0B;
+  --gold-light:  rgba(245,158,11,0.10);
+  --red-light:   rgba(239,68,68,0.08);
+  --red-border:  rgba(239,68,68,0.30);
+  --green-light: rgba(0,255,181,0.07);
+  --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-xl: 18px; --r-pill: 999px;
+}
+
+/* ── RESET ────────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Poppins','Helvetica Neue',Arial,sans-serif;background:var(--navy);color:var(--white);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── SCROLLBAR ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--navy)}
+::-webkit-scrollbar-thumb{background:var(--teal);border-radius:3px}
+
+/* ── LAYOUT ───────────────────────────────────────────────────────────────── */
+.app { display:flex; min-height:100vh; }
+
+/* ── SIDEBAR ──────────────────────────────────────────────────────────────── */
+.sidebar {
+  width:240px; flex-shrink:0;
+  background:var(--teal);
+  border-right:1px solid var(--mint-border);
+  position:sticky; top:0; height:100vh;
+  display:flex; flex-direction:column;
+  overflow-y:auto; padding:0;
+}
+.sidebar-head {
+  padding:24px 20px 20px;
+  border-bottom:1px solid var(--mint-border);
+}
+.logo {
+  display:flex; align-items:center; gap:10px;
+  text-decoration:none; margin-bottom:16px;
+}
+.logo-icon { width:32px; height:32px; flex-shrink:0; }
+.logo-text { font-size:16px; font-weight:700; color:var(--white); }
+.logo-text span { color:var(--mint); }
+.sidebar-course {
+  font-size:10px; font-weight:600; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--mint);
+  margin-bottom:6px;
+}
+.sidebar-title {
+  font-size:13px; font-weight:500; color:var(--soft);
+  line-height:1.4;
+}
+
+/* NAV ITEMS */
+.sidebar-nav { padding:12px 0; flex:1; }
+.nav-section-label {
+  font-size:9.5px; font-weight:700; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--muted);
+  padding:12px 20px 4px;
+}
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 20px; cursor:pointer;
+  border-left:2px solid transparent;
+  transition:all 0.18s;
+  font-size:12.5px; font-weight:500;
+  color:var(--muted); text-decoration:none;
+  position:relative;
+}
+.nav-item:hover { color:var(--white); background:var(--mint-hover); border-left-color:rgba(0,255,181,0.4); }
+.nav-item.active { color:var(--mint); border-left-color:var(--mint); background:var(--mint-dim); }
+.nav-num {
+  width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  background:var(--mint-dim); border:1px solid var(--mint-border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; color:var(--mint);
+  transition:all 0.18s;
+}
+.nav-item.active .nav-num { background:var(--mint); color:var(--teal); border-color:var(--mint); }
+.nav-item.done .nav-num { background:rgba(0,255,181,0.2); color:var(--mint); }
+.nav-item.done .nav-num::after { content:'✓'; }
+.nav-item.done .nav-num-inner { display:none; }
+.nav-check {
+  margin-left:auto; font-size:10px;
+  color:var(--mint); opacity:0;
+  transition:opacity 0.2s;
+}
+.nav-item.done .nav-check { opacity:1; }
+
+/* PROGRESS */
+.sidebar-footer {
+  padding:16px 20px;
+  border-top:1px solid var(--mint-border);
+}
+.progress-label {
+  display:flex; justify-content:space-between;
+  font-size:10.5px; font-weight:500;
+  color:var(--muted); margin-bottom:8px;
+}
+.progress-label .pct { color:var(--mint); font-weight:700; }
+.progress-track {
+  height:4px; background:rgba(255,255,255,0.08);
+  border-radius:999px; overflow:hidden;
+}
+.progress-bar {
+  height:100%; background:var(--mint);
+  border-radius:999px; width:0%;
+  transition:width 0.5s ease;
+}
+.progress-detail {
+  font-size:10px; color:var(--muted); margin-top:6px;
+  line-height:1.4;
+}
+
+/* ── MAIN ─────────────────────────────────────────────────────────────────── */
+.main { flex:1; display:flex; flex-direction:column; min-width:0; }
+
+/* TOPBAR */
+.topbar {
+  background:var(--teal);
+  border-bottom:1px solid var(--mint-border);
+  padding:0 48px;
+  height:56px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:50;
+}
+.topbar-breadcrumb {
+  font-size:12px; color:var(--muted);
+  display:flex; align-items:center; gap:8px;
+}
+.topbar-breadcrumb .sep { opacity:0.4; }
+.topbar-breadcrumb .cur { color:var(--soft); font-weight:500; }
+.topbar-actions { display:flex; gap:10px; align-items:center; }
+.btn {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:8px 18px; border-radius:var(--r-sm);
+  font-family:'Poppins',sans-serif; font-size:12.5px;
+  font-weight:600; cursor:pointer; border:none;
+  transition:all 0.2s; white-space:nowrap; text-decoration:none;
+}
+.btn-ghost {
+  background:transparent; color:var(--soft);
+  border:1px solid var(--mint-border);
+}
+.btn-ghost:hover { background:var(--mint-dim); color:var(--white); border-color:var(--mint); }
+.btn-mint {
+  background:var(--mint); color:var(--teal); font-weight:700;
+}
+.btn-mint:hover { background:#00e8a3; transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,255,181,0.28); }
+.btn-mint:active { transform:translateY(0); }
+
+/* HERO BANNER */
+.hero {
+  background:var(--teal);
+  background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300FFB5' fill-opacity='0.05'%3E%3Ccircle cx='15' cy='30' r='12'/%3E%3Cpolygon points='27,6 45,6 27,24'/%3E%3Crect x='36' y='36' width='12' height='6'/%3E%3C/g%3E%3C/svg%3E");
+  padding:40px 48px 36px;
+  border-bottom:1px solid var(--mint-border);
+  position:relative; overflow:hidden;
+}
+.hero::after {
+  content:'';
+  position:absolute; top:-80px; right:-80px;
+  width:400px; height:400px;
+  background:radial-gradient(circle, rgba(0,255,181,0.07) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero-pill {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--mint-dim); border:1px solid var(--mint-border);
+  color:var(--mint); font-size:10.5px; font-weight:600;
+  letter-spacing:0.1em; text-transform:uppercase;
+  padding:5px 14px; border-radius:var(--r-pill); margin-bottom:16px;
+}
+.hero-pill::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:var(--mint); animation:blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.hero h1 {
+  font-size:28px; font-weight:800; line-height:1.15;
+  letter-spacing:-0.02em; margin-bottom:10px; color:var(--white);
+}
+.hero h1 em { font-style:normal; color:var(--mint); }
+.hero-sub {
+  font-size:14px; color:var(--muted); max-width:580px;
+  line-height:1.65; margin-bottom:24px;
+}
+.hero-meta { display:flex; gap:20px; flex-wrap:wrap; }
+.meta-item {
+  display:flex; align-items:center; gap:7px;
+  font-size:12px; font-weight:500; color:var(--muted);
+}
+.meta-dot { width:5px; height:5px; border-radius:50%; background:var(--mint); }
+
+/* STUDENT BAR */
+.student-bar {
+  background:rgba(1,61,76,0.4);
+  border-bottom:1px solid var(--mint-border);
+  padding:14px 48px;
+  display:flex; gap:16px; align-items:center; flex-wrap:wrap;
+}
+.student-field { display:flex; align-items:center; gap:8px; }
+.student-label {
+  font-size:10px; font-weight:700; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--mint); white-space:nowrap;
+}
+.student-input {
+  background:var(--input-bg); border:1px solid var(--mint-border);
+  border-radius:var(--r-sm); padding:6px 12px;
+  font-size:13px; font-family:'Poppins',sans-serif;
+  color:var(--white); outline:none;
+  transition:border-color 0.2s, background 0.2s;
+  min-width:140px;
+}
+.student-input:focus { border-color:var(--mint); background:rgba(0,255,181,0.04); }
+.student-input::placeholder { color:var(--muted); }
+
+/* CONTENT AREA */
+.content { padding:40px 48px; display:flex; flex-direction:column; gap:48px; }
+
+/* ── SECTION BLOCKS ───────────────────────────────────────────────────────── */
+.section-block {
+  opacity:0; transform:translateY(14px);
+  animation:fadeUp 0.4s ease forwards;
+}
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+.section-block:nth-child(1){animation-delay:0.04s}
+.section-block:nth-child(2){animation-delay:0.10s}
+.section-block:nth-child(3){animation-delay:0.16s}
+.section-block:nth-child(4){animation-delay:0.22s}
+.section-block:nth-child(5){animation-delay:0.28s}
+.section-block:nth-child(6){animation-delay:0.34s}
+.section-block:nth-child(7){animation-delay:0.40s}
+.section-block:nth-child(8){animation-delay:0.46s}
+.section-block:nth-child(9){animation-delay:0.52s}
+
+.section-header { display:flex; align-items:flex-start; gap:16px; margin-bottom:22px; }
+.section-badge {
+  width:42px; height:42px; border-radius:var(--r-md); flex-shrink:0;
+  background:var(--mint); color:var(--teal);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; font-weight:800; margin-top:3px;
+}
+.section-badge.alt {
+  background:var(--mint-dim); border:1px solid var(--mint-border);
+  color:var(--mint); font-size:16px;
+}
+.section-meta { flex:1; }
+.section-tag {
+  font-size:10px; font-weight:700; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--mint); margin-bottom:3px;
+}
+.section-title { font-size:20px; font-weight:700; color:var(--white); margin-bottom:3px; }
+.section-desc { font-size:13px; color:var(--muted); line-height:1.6; }
+
+.section-body {
+  background:var(--surface);
+  border:1px solid var(--mint-border);
+  border-radius:var(--r-lg); padding:26px;
+  display:flex; flex-direction:column; gap:20px;
+}
+
+/* ── FIELDS ───────────────────────────────────────────────────────────────── */
+.field { display:flex; flex-direction:column; gap:5px; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.field-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+
+label.field-label {
+  font-size:10.5px; font-weight:700; letter-spacing:0.09em;
+  text-transform:uppercase; color:var(--mint);
+}
+.field-hint {
+  font-size:11.5px; color:var(--muted);
+  margin-top:-1px; line-height:1.5;
+}
+input.fi, textarea.fi {
+  background:var(--input-bg); border:1px solid var(--mint-border);
+  border-radius:var(--r-sm); padding:10px 14px;
+  font-size:13.5px; font-family:'Poppins',sans-serif;
+  color:var(--white); outline:none;
+  transition:border-color 0.2s, background 0.2s;
+  resize:vertical;
+}
+input.fi::placeholder, textarea.fi::placeholder { color:rgba(255,255,255,0.28); }
+input.fi:focus, textarea.fi:focus {
+  border-color:var(--mint); background:rgba(0,255,181,0.04);
+}
+textarea.fi { min-height:76px; }
+textarea.fi.tall { min-height:100px; }
+
+.field-divider {
+  height:1px; background:var(--mint-border);
+  border-radius:999px; margin:2px 0;
+}
+
+/* ── ALERT BOXES ──────────────────────────────────────────────────────────── */
+.alert {
+  border-radius:var(--r-md); padding:14px 18px;
+  font-size:13px; line-height:1.65;
+  border-left:3px solid; display:flex; gap:10px;
+}
+.alert-icon { flex-shrink:0; font-size:16px; margin-top:1px; }
+.alert-body { flex:1; }
+.alert-mint { background:var(--green-light); border-color:var(--mint); }
+.alert-gold { background:var(--gold-light); border-color:var(--gold); }
+.alert strong { font-weight:700; display:block; margin-bottom:3px; }
+
+/* EXAMPLE ROW */
+.example-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.eg {
+  border-radius:var(--r-md); padding:13px 15px;
+  font-size:12.5px; line-height:1.55; border:1px solid;
+}
+.eg-label {
+  font-size:10px; font-weight:700; letter-spacing:0.08em;
+  text-transform:uppercase; margin-bottom:6px;
+}
+.eg-bad  { background:var(--red-light); border-color:var(--red-border); }
+.eg-bad  .eg-label { color:rgba(239,100,100,0.9); }
+.eg-bad  p { color:rgba(255,255,255,0.65); font-style:italic; }
+.eg-good { background:var(--green-light); border-color:var(--mint-border); }
+.eg-good .eg-label { color:var(--mint); }
+.eg-good p { color:var(--soft); font-style:italic; }
+
+/* TRIGGER ROW */
+.trigger-row {
+  display:grid; grid-template-columns:1fr 80px 1fr; gap:10px;
+  align-items:center;
+}
+.trigger-arrow {
+  text-align:center; font-size:18px; font-weight:800;
+  color:var(--mint); margin-top:20px;
+}
+
+/* DISQUALIFIER ROW */
+.disq-row {
+  display:grid; grid-template-columns:1fr 100px 1fr; gap:10px;
+  align-items:center;
+}
+.disq-skip {
+  text-align:center; padding:10px 0;
+  font-size:13px; font-weight:800; color:var(--teal);
+  background:rgba(0,255,181,0.18); border-radius:var(--r-sm);
+  margin-top:20px; letter-spacing:0.05em;
+}
+
+/* TECH GRID */
+.tech-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.tech-item { display:flex; flex-direction:column; gap:8px; }
+
+/* CHECKLIST */
+.checklist { display:flex; flex-direction:column; gap:8px; }
+.check-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 14px; border-radius:var(--r-md);
+  border:1px solid var(--mint-border);
+  background:rgba(255,255,255,0.02);
+  cursor:pointer; transition:all 0.18s;
+  font-size:13px; color:var(--soft);
+}
+.check-item:hover { background:var(--mint-hover); border-color:rgba(0,255,181,0.4); }
+.check-item input[type=checkbox] {
+  margin-top:2px; accent-color:var(--mint);
+  width:15px; height:15px; cursor:pointer; flex-shrink:0;
+}
+.check-item.done { color:var(--muted); }
+.check-item.done span { text-decoration:line-through; }
+
+/* HW TAGS */
+.hw-tag {
+  display:inline-block; font-size:10px; font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase;
+  padding:3px 12px; border-radius:var(--r-pill); border:1px solid;
+  margin-bottom:12px;
+}
+.hw-fit   { background:rgba(0,255,181,0.12); color:var(--mint); border-color:var(--mint-border); }
+.hw-nofit { background:var(--red-light); color:rgba(239,100,100,0.9); border-color:var(--red-border); }
+.hw-amb   { background:rgba(220,255,99,0.08); color:var(--lime); border-color:rgba(220,255,99,0.25); }
+
+/* STRETCH BLOCK */
+.stretch {
+  border:1px dashed rgba(220,255,99,0.3);
+  border-radius:var(--r-lg); padding:22px;
+  background:rgba(220,255,99,0.03);
+}
+.stretch-title {
+  font-size:10.5px; font-weight:700; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--lime);
+  margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+.stretch-title::before { content:'★'; font-size:13px; }
+
+/* REFERENCE GRID */
+.ref-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.ref-card {
+  background:var(--mint-dim); border:1px solid var(--mint-border);
+  border-radius:var(--r-md); padding:14px;
+  display:flex; flex-direction:column; gap:5px;
+}
+.ref-term { font-size:12px; font-weight:700; color:var(--mint); }
+.ref-def  { font-size:11.5px; color:var(--soft); line-height:1.55; }
+
+/* SAVE BAR */
+.save-bar {
+  position:sticky; bottom:0; z-index:40;
+  background:var(--teal);
+  border-top:1px solid var(--mint-border);
+  padding:12px 48px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.save-status {
+  display:flex; align-items:center; gap:9px;
+  font-size:12.5px; color:var(--muted);
+}
+.save-pulse {
+  width:7px; height:7px; border-radius:50%;
+  background:var(--mint); animation:blink 2s infinite;
+}
+.save-btns { display:flex; gap:10px; }
+
+/* ── PRINT STYLES ─────────────────────────────────────────────────────────── */
+@media print {
+  /* Hide everything except the PDF output */
+  .sidebar, .topbar, .student-bar, .save-bar,
+  .hero-pill, .hero-meta, .alert-gold,
+  .section-block input.fi:placeholder-shown,
+  .section-block textarea.fi:placeholder-shown { }
+
+  * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+
+  @page {
+    size:A4;
+    margin:15mm 14mm 18mm 14mm;
+  }
+
+  html, body { background:white !important; color:#02081B !important; }
+
+  .app { display:block !important; }
+  .sidebar { display:none !important; }
+  .main { display:block !important; }
+  .topbar { display:none !important; }
+  .student-bar { display:none !important; }
+  .save-bar { display:none !important; }
+  .hero { display:none !important; }
+
+  /* PDF cover injected by JS */
+  .pdf-cover {
+    display:block !important;
+    page-break-after:always;
+  }
+
+  /* Section styling for print */
+  .content {
+    padding:0 !important; gap:0 !important;
+    display:block !important;
+  }
+  .section-block {
+    opacity:1 !important; transform:none !important;
+    page-break-inside:avoid;
+    margin-bottom:0;
+    padding:16px 0 8px;
+    border-bottom:1px solid rgba(1,61,76,0.15);
+  }
+  .section-block:last-child { border-bottom:none; }
+
+  .section-header { margin-bottom:12px; gap:12px; }
+  .section-badge {
+    width:34px !important; height:34px !important;
+    background:#013D4C !important; color:#00FFB5 !important;
+    font-size:14px !important; border-radius:6px !important;
+  }
+  .section-badge.alt {
+    background:rgba(0,0,0,0.06) !important;
+    border:1px solid #013D4C !important; color:#013D4C !important;
+  }
+  .section-tag { color:#013D4C !important; font-size:9px !important; }
+  .section-title { color:#02081B !important; font-size:16px !important; }
+  .section-desc { color:#555 !important; font-size:12px !important; }
+
+  .section-body {
+    background:rgba(1,61,76,0.04) !important;
+    border:1px solid rgba(1,61,76,0.18) !important;
+    border-radius:8px !important; padding:16px !important;
+    gap:14px !important;
+  }
+
+  label.field-label { color:#013D4C !important; font-size:9.5px !important; }
+  .field-hint { color:#666 !important; font-size:10.5px !important; }
+
+  input.fi, textarea.fi {
+    background:white !important;
+    border:1px solid #b0c8cc !important;
+    color:#02081B !important; font-size:12px !important;
+    border-radius:4px !important; padding:8px 10px !important;
+    min-height:auto !important;
+  }
+  textarea.fi { min-height:60px !important; }
+  textarea.fi.tall { min-height:80px !important; }
+
+  .field-row { gap:12px !important; }
+  .field-row-3 { gap:10px !important; }
+  .tech-grid { gap:10px !important; }
+  .example-row { gap:10px !important; }
+
+  .eg-bad  { background:rgba(239,68,68,0.06) !important; border-color:rgba(239,68,68,0.25) !important; }
+  .eg-bad  .eg-label { color:rgba(180,50,50,0.9) !important; }
+  .eg-bad  p { color:#555 !important; }
+  .eg-good { background:rgba(1,61,76,0.06) !important; border-color:rgba(1,61,76,0.25) !important; }
+  .eg-good .eg-label { color:#013D4C !important; }
+  .eg-good p { color:#333 !important; }
+
+  .alert-mint {
+    background:rgba(1,61,76,0.06) !important;
+    border-color:#013D4C !important; color:#333 !important;
+  }
+
+  .disq-skip {
+    background:rgba(1,61,76,0.15) !important;
+    color:#013D4C !important;
+  }
+  .trigger-arrow { color:#013D4C !important; }
+
+  .check-item {
+    background:white !important;
+    border:1px solid rgba(1,61,76,0.2) !important;
+    color:#333 !important;
+  }
+  .check-item input[type=checkbox] { accent-color:#013D4C !important; }
+  .check-item.done span { color:#999 !important; }
+
+  .ref-card {
+    background:rgba(1,61,76,0.05) !important;
+    border:1px solid rgba(1,61,76,0.2) !important;
+  }
+  .ref-term { color:#013D4C !important; }
+  .ref-def  { color:#444 !important; }
+
+  .stretch {
+    background:rgba(220,255,99,0.06) !important;
+    border-color:rgba(180,200,0,0.3) !important;
+  }
+  .stretch-title { color:#5a6800 !important; }
+
+  .hw-fit   { background:rgba(1,61,76,0.1) !important; color:#013D4C !important; border-color:rgba(1,61,76,0.3) !important; }
+  .hw-nofit { background:rgba(239,68,68,0.08) !important; color:rgba(180,50,50,0.9) !important; }
+  .hw-amb   { background:rgba(180,200,0,0.1) !important; color:#5a6800 !important; border-color:rgba(180,200,0,0.3) !important; }
+
+  .field-divider { background:rgba(1,61,76,0.15) !important; }
+}
+
+/* PDF COVER (hidden on screen, shown on print) */
+.pdf-cover {
+  display:none;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────────────── */
+@media (max-width:900px) {
+  .sidebar { display:none; }
+  .topbar, .student-bar, .save-bar { padding-left:24px; padding-right:24px; }
+  .hero { padding:28px 24px; }
+  .content { padding:28px 24px; }
+  .field-row, .field-row-3, .tech-grid, .example-row, .trigger-row, .disq-row, .ref-grid { grid-template-columns:1fr; }
+  .trigger-arrow, .disq-skip { margin-top:0; }
+}
+</style>
+</head>
+<body>
+
+<!-- PDF COVER (screen-hidden, print-visible) -->
+<div class="pdf-cover" id="pdf-cover">
+  <div style="background:#013D4C;padding:40px;border-radius:12px;margin-bottom:24px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,255,181,0.12) 0%,transparent 70%);"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 4C9.37 4 4 9.37 4 16C4 22.63 9.37 28 16 28V20H16C12.69 20 10 17.31 10 14C10 10.69 12.69 8 16 8V4Z" fill="#00FFB5"/><path d="M16 4L28 4L28 16L16 4Z" fill="#00FFB5"/><rect x="20" y="20" width="8" height="4" fill="#00FFB5"/><rect x="16" y="20" width="4" height="8" fill="#00FFB5"/></svg>
+      <span style="color:#00FFB5;font-weight:700;font-size:16px;">Think<span style="color:white">Growth</span></span>
+      <span style="color:rgba(255,255,255,0.4);font-size:13px;margin-left:8px;">GTM Foundations · Session 1</span>
+    </div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#00FFB5;margin-bottom:10px;">Exercise 1A · ICP Brief</div>
+    <h1 style="font-size:28px;font-weight:800;color:white;letter-spacing:-0.02em;margin-bottom:10px;line-height:1.15;">Ideal Customer Profile<br>for <span id="pdf-company" style="color:#00FFB5;">Stackably</span></h1>
+    <p style="color:rgba(255,255,255,0.65);font-size:13px;line-height:1.6;max-width:480px;">A complete 6-section ICP brief. Every section must be specific enough that a new teammate could build a prospect list from it without asking a follow-up question.</p>
+    <div style="display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);">Student: <strong id="pdf-name" style="color:rgba(255,255,255,0.85);">—</strong></div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);">Date: <strong id="pdf-date" style="color:rgba(255,255,255,0.85);">—</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <a href="#" class="logo">
+        <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+          <path d="M16 4C9.37 4 4 9.37 4 16C4 22.63 9.37 28 16 28V20H16C12.69 20 10 17.31 10 14C10 10.69 12.69 8 16 8V4Z" fill="#00FFB5"/>
+          <path d="M16 4L28 4L28 16L16 4Z" fill="#00FFB5"/>
+          <rect x="20" y="20" width="8" height="4" fill="#00FFB5"/>
+          <rect x="16" y="20" width="4" height="8" fill="#00FFB5"/>
+        </svg>
+        <span class="logo-text">Think<span>Growth</span></span>
+      </a>
+      <div class="sidebar-course">GTM Foundations</div>
+      <div class="sidebar-title">Week 1, Session 1 · ICP Builder</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">ICP Components</div>
+      <a class="nav-item active" href="#s1" onclick="setActive(this)">
+        <span class="nav-num"><span class="nav-num-inner">1</span></span>
+        Firmographics
+        <span class="nav-check">✓</span>
+      </a>
+      <a class="nav-item" href="#s2" onclick="setActive(this)">
+        <span class="nav-num"><span class="nav-num-inner">2</span></span>
+        Technographics
+        <span class="nav-check">✓</span>
+      </a>
+      <a class="nav-item" href="#s3" onclick="setActive(this)">
+        <span class="nav-num"><span class="nav-num-inner">3</span></span>
+        Buying Triggers
+        <span class="nav-check">✓</span>
+      </a>
+      <a class="nav-item" href="#s4" onclick="setActive(this)">
+        <span class="nav-num"><span class="nav-num-inner">4</span></span>
+        Pain
+        <span class="nav-check">✓</span>
+      </a>
+      <a class="nav-item" href="#s5" onclick="setActive(this)">
+        <span class="nav-num"><span class="nav-num-inner">5</span></span>
+        Persona
+        <span class="nav-check">✓</span>
+      </a>
+      <a class="nav-item" href="#s6" onclick="setActive(this)">
+        <span class="nav-num"><span class="nav-num-inner">6</span></span>
+        Disqualifiers
+        <span class="nav-check">✓</span>
+      </a>
+      <div class="nav-section-label" style="margin-top:8px;">Review</div>
+      <a class="nav-item" href="#sc" onclick="setActive(this)">
+        <span class="nav-num" style="font-size:9px;"><span class="nav-num-inner">✓</span></span>
+        Self-Check
+        <span class="nav-check">✓</span>
+      </a>
+      <a class="nav-item" href="#hw" onclick="setActive(this)">
+        <span class="nav-num" style="font-size:9px;"><span class="nav-num-inner">HW</span></span>
+        Homework
+        <span class="nav-check">✓</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="progress-label">
+        <span>Completion</span>
+        <span class="pct" id="pct-label">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-bar" id="prog-bar"></div>
+      </div>
+      <div class="progress-detail" id="prog-detail">Start filling in your ICP to track progress</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-breadcrumb">
+        <span>GTM Foundations</span>
+        <span class="sep">›</span>
+        <span>Week 1</span>
+        <span class="sep">›</span>
+        <span class="cur">ICP Builder</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="saveLocal()">💾 Save</button>
+        <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+        <button class="btn btn-mint" onclick="exportPDF()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-pill">Session 1 · Exercise 1A</div>
+      <h1>Your <em>ICP Brief</em> for Stackably</h1>
+      <p class="hero-sub">Complete all six sections. The brief is done when a new teammate could build a prospect list from it without asking you a single follow-up question.</p>
+      <div class="hero-meta">
+        <div class="meta-item"><span class="meta-dot"></span> 6 ICP components</div>
+        <div class="meta-item"><span class="meta-dot"></span> 20 min in-session</div>
+        <div class="meta-item"><span class="meta-dot"></span> GTM Foundations · Week 1</div>
+        <div class="meta-item"><span class="meta-dot"></span> Autosaved locally</div>
+      </div>
+    </div>
+
+    <!-- STUDENT BAR -->
+    <div class="student-bar">
+      <div class="student-field">
+        <span class="student-label">Name</span>
+        <input class="student-input" id="s_name" placeholder="Your name" oninput="updateProgress();syncCover()">
+      </div>
+      <div class="student-field">
+        <span class="student-label">Date</span>
+        <input class="student-input" type="date" id="s_date" oninput="updateProgress();syncCover()">
+      </div>
+      <div class="student-field">
+        <span class="student-label">Company</span>
+        <input class="student-input" id="s_company" value="Stackably" oninput="updateProgress();syncCover()">
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- ── S1: FIRMOGRAPHICS ─────────────────────────────────────────────── -->
+      <div class="section-block" id="s1">
+        <div class="section-header">
+          <div class="section-badge">1</div>
+          <div class="section-meta">
+            <div class="section-tag">Component One</div>
+            <div class="section-title">Firmographics</div>
+            <div class="section-desc">The company's vital stats. Use specific numbers — adjectives don't build lists.</div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Headcount range</label>
+              <div class="field-hint">e.g. 50–300 employees</div>
+              <input class="fi" placeholder="Enter headcount range…" oninput="updateProgress()">
+            </div>
+            <div class="field">
+              <label class="field-label">Revenue / ARR range</label>
+              <div class="field-hint">e.g. $2M–$15M ARR</div>
+              <input class="fi" placeholder="Enter ARR range…" oninput="updateProgress()">
+            </div>
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Funding stage</label>
+              <div class="field-hint">e.g. Series A–C</div>
+              <input class="fi" placeholder="Enter funding stage…" oninput="updateProgress()">
+            </div>
+            <div class="field">
+              <label class="field-label">Industry / vertical</label>
+              <div class="field-hint">e.g. B2B SaaS</div>
+              <input class="fi" placeholder="Enter industry…" oninput="updateProgress()">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Geography</label>
+              <div class="field-hint">e.g. US-based</div>
+              <input class="fi" placeholder="Enter geography…" oninput="updateProgress()">
+            </div>
+            <div class="field">
+              <label class="field-label">Additional criteria</label>
+              <div class="field-hint">Any other defining characteristic</div>
+              <input class="fi" placeholder="Anything else that matters…" oninput="updateProgress()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── S2: TECHNOGRAPHICS ────────────────────────────────────────────── -->
+      <div class="section-block" id="s2">
+        <div class="section-header">
+          <div class="section-badge">2</div>
+          <div class="section-meta">
+            <div class="section-tag">Component Two</div>
+            <div class="section-title">Technographics</div>
+            <div class="section-desc">Tools they already use. Each one signals something about readiness. "Uses Slack" alone isn't useful — explain the signal.</div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="alert alert-mint">
+            <span class="alert-icon">📌</span>
+            <div class="alert-body"><strong>How to find technographics</strong>BuiltWith.com · LinkedIn job posts (tools in JDs) · Clay enrichment columns (covered in Session 2)</div>
+          </div>
+          <div class="tech-grid">
+            <div class="tech-item">
+              <div class="field">
+                <label class="field-label">Tool 1</label>
+                <input class="fi" placeholder="e.g. Notion" oninput="updateProgress()">
+              </div>
+              <div class="field">
+                <label class="field-label">What it signals</label>
+                <input class="fi" placeholder="e.g. Documents processes — ready for structured workflows" oninput="updateProgress()">
+              </div>
+            </div>
+            <div class="tech-item">
+              <div class="field">
+                <label class="field-label">Tool 2</label>
+                <input class="fi" placeholder="e.g. Slack" oninput="updateProgress()">
+              </div>
+              <div class="field">
+                <label class="field-label">What it signals</label>
+                <input class="fi" placeholder="e.g. Approvals already happening here — the pain is live" oninput="updateProgress()">
+              </div>
+            </div>
+            <div class="tech-item">
+              <div class="field">
+                <label class="field-label">Tool 3</label>
+                <input class="fi" placeholder="e.g. Jira" oninput="updateProgress()">
+              </div>
+              <div class="field">
+                <label class="field-label">What it signals</label>
+                <input class="fi" placeholder="e.g. Engineering rigour bleeds into ops" oninput="updateProgress()">
+              </div>
+            </div>
+            <div class="tech-item">
+              <div class="field">
+                <label class="field-label">Tool 4 (optional)</label>
+                <input class="fi" placeholder="e.g. Rippling / Gusto" oninput="updateProgress()">
+              </div>
+              <div class="field">
+                <label class="field-label">What it signals</label>
+                <input class="fi" placeholder="e.g. Scaling people ops — headcount growth trigger active" oninput="updateProgress()">
+              </div>
+            </div>
+            <div class="tech-item">
+              <div class="field">
+                <label class="field-label">Tool 5 (optional)</label>
+                <input class="fi" placeholder="e.g. Zapier / Make" oninput="updateProgress()">
+              </div>
+              <div class="field">
+                <label class="field-label">What it signals</label>
+                <input class="fi" placeholder="e.g. They've tried to automate — believe in the concept" oninput="updateProgress()">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── S3: BUYING TRIGGERS ───────────────────────────────────────────── -->
+      <div class="section-block" id="s3">
+        <div class="section-header">
+          <div class="section-badge">3</div>
+          <div class="section-meta">
+            <div class="section-tag">Component Three</div>
+            <div class="section-title">Buying Triggers</div>
+            <div class="section-desc">Events that create urgency right now. A trigger turns a vaguely interested company into an active buyer.</div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="alert alert-mint">
+            <span class="alert-icon">📌</span>
+            <div class="alert-body"><strong>Where to spot triggers</strong>LinkedIn hiring posts · Crunchbase funding rounds · Press releases · LinkedIn title changes</div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Trigger 1</label>
+          </div>
+          <div class="trigger-row">
+            <div class="field">
+              <input class="fi" placeholder="e.g. New Chief of Staff or Ops Manager hired" oninput="updateProgress()">
+            </div>
+            <div class="trigger-arrow">→</div>
+            <div class="field">
+              <input class="fi" placeholder="Why it creates urgency: e.g. First thing they do is fix chaos — they have budget and mandate" oninput="updateProgress()">
+            </div>
+          </div>
+
+          <div class="field-divider"></div>
+
+          <div class="field">
+            <label class="field-label">Trigger 2</label>
+          </div>
+          <div class="trigger-row">
+            <div class="field">
+              <input class="fi" placeholder="e.g. Headcount jump from 40 → 80+ employees" oninput="updateProgress()">
+            </div>
+            <div class="trigger-arrow">→</div>
+            <div class="field">
+              <input class="fi" placeholder="Why it creates urgency: e.g. When a company doubles, informal processes break overnight" oninput="updateProgress()">
+            </div>
+          </div>
+
+          <div class="field-divider"></div>
+
+          <div class="field">
+            <label class="field-label">Trigger 3 (optional)</label>
+          </div>
+          <div class="trigger-row">
+            <div class="field">
+              <input class="fi" placeholder="e.g. Series B or C funding round closed" oninput="updateProgress()">
+            </div>
+            <div class="trigger-arrow">→</div>
+            <div class="field">
+              <input class="fi" placeholder="Why it creates urgency: e.g. Capital in = pressure to scale = ops tool budgets open up" oninput="updateProgress()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── S4: PAIN ──────────────────────────────────────────────────────── -->
+      <div class="section-block" id="s4">
+        <div class="section-header">
+          <div class="section-badge">4</div>
+          <div class="section-meta">
+            <div class="section-tag">Component Four</div>
+            <div class="section-title">Pain</div>
+            <div class="section-desc">The problem in the customer's own words. Not yours. Not marketing copy. Theirs.</div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="alert alert-gold">
+            <span class="alert-icon">⚡</span>
+            <div class="alert-body"><strong>The 5pm Thursday test</strong>Would a frustrated ops manager actually say this at the end of a long week? If it sounds like a landing page — rewrite it.</div>
+          </div>
+          <div class="example-row">
+            <div class="eg eg-bad">
+              <div class="eg-label">✗ Avoid this</div>
+              <p>"Inefficient approval workflows slow down business velocity and impact organisational performance."</p>
+            </div>
+            <div class="eg eg-good">
+              <div class="eg-label">✓ Aim for this</div>
+              <p>"We approved a $15k vendor contract over Slack DMs and nobody followed up for three weeks. The invoice showed up and nobody knew who signed off."</p>
+            </div>
+          </div>
+          <div class="field-divider"></div>
+          <div class="field">
+            <label class="field-label">Primary pain statement (in the customer's words)</label>
+            <div class="field-hint">Write the sentence they'd say to a colleague — specific, plain, frustrated</div>
+            <textarea class="fi tall" placeholder="Write it here…" oninput="updateProgress()"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label">Secondary pain / knock-on effect (optional)</label>
+            <div class="field-hint">What goes wrong downstream because of the primary pain?</div>
+            <textarea class="fi" placeholder="The downstream effect is that…" oninput="updateProgress()"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label">Who feels this most acutely?</label>
+            <input class="fi" placeholder="Which role or person is most impacted day-to-day?" oninput="updateProgress()">
+          </div>
+        </div>
+      </div>
+
+      <!-- ── S5: PERSONA ───────────────────────────────────────────────────── -->
+      <div class="section-block" id="s5">
+        <div class="section-header">
+          <div class="section-badge">5</div>
+          <div class="section-meta">
+            <div class="section-tag">Component Five</div>
+            <div class="section-title">Persona</div>
+            <div class="section-desc">The human who feels the pain AND holds budget authority or influence to buy.</div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="alert alert-gold">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-body"><strong>"Decision maker" is not a persona.</strong>It cannot be searched in Clay or any prospecting tool. Name a specific job title.</div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Primary title</label>
+              <input class="fi" placeholder="e.g. Operations Manager" oninput="updateProgress()">
+            </div>
+            <div class="field">
+              <label class="field-label">Secondary title</label>
+              <input class="fi" placeholder="e.g. Chief of Staff" oninput="updateProgress()">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Seniority level</label>
+              <input class="fi" placeholder="e.g. Mid-senior, 3–8 years experience" oninput="updateProgress()">
+            </div>
+            <div class="field">
+              <label class="field-label">Reports to</label>
+              <input class="fi" placeholder="e.g. COO, CEO, or VP Operations" oninput="updateProgress()">
+            </div>
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Core KPI / measure of success</label>
+              <input class="fi" placeholder="e.g. Team throughput, process efficiency" oninput="updateProgress()">
+            </div>
+            <div class="field">
+              <label class="field-label">Budget authority</label>
+              <input class="fi" placeholder="e.g. Can approve $5–30k/year software" oninput="updateProgress()">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">What makes them champion this internally?</label>
+            <textarea class="fi" placeholder="e.g. Stopping a recurring problem that makes them look disorganised in front of leadership…" oninput="updateProgress()"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── S6: DISQUALIFIERS ─────────────────────────────────────────────── -->
+      <div class="section-block" id="s6">
+        <div class="section-header">
+          <div class="section-badge">6</div>
+          <div class="section-meta">
+            <div class="section-tag">Component Six</div>
+            <div class="section-title">Disqualifiers</div>
+            <div class="section-desc">Accounts that look right on the surface — but aren't. Every entry must follow: "If [specific condition] → skip"</div>
+          </div>
+        </div>
+        <div class="section-body">
+
+          <div class="field"><label class="field-label">Disqualifier 1</label></div>
+          <div class="disq-row">
+            <div class="field"><input class="fi" placeholder="If… e.g. headcount < 30" oninput="updateProgress()"></div>
+            <div class="disq-skip">→ SKIP</div>
+            <div class="field"><input class="fi" placeholder="Because… e.g. not enough ops complexity yet" oninput="updateProgress()"></div>
+          </div>
+
+          <div class="field-divider"></div>
+
+          <div class="field"><label class="field-label">Disqualifier 2</label></div>
+          <div class="disq-row">
+            <div class="field"><input class="fi" placeholder="If… e.g. headcount > 1,000" oninput="updateProgress()"></div>
+            <div class="disq-skip">→ SKIP</div>
+            <div class="field"><input class="fi" placeholder="Because… e.g. enterprise procurement = 6–18 months" oninput="updateProgress()"></div>
+          </div>
+
+          <div class="field-divider"></div>
+
+          <div class="field"><label class="field-label">Disqualifier 3 (optional)</label></div>
+          <div class="disq-row">
+            <div class="field"><input class="fi" placeholder="If… e.g. business model is services" oninput="updateProgress()"></div>
+            <div class="disq-skip">→ SKIP</div>
+            <div class="field"><input class="fi" placeholder="Because… e.g. project-based work, no repeating workflow" oninput="updateProgress()"></div>
+          </div>
+
+          <div class="field-divider"></div>
+
+          <div class="field"><label class="field-label">Disqualifier 4 (optional)</label></div>
+          <div class="disq-row">
+            <div class="field"><input class="fi" placeholder="If… e.g. no Slack / no SaaS stack" oninput="updateProgress()"></div>
+            <div class="disq-skip">→ SKIP</div>
+            <div class="field"><input class="fi" placeholder="Because… e.g. integration too far a leap right now" oninput="updateProgress()"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── SELF CHECK ─────────────────────────────────────────────────────── -->
+      <div class="section-block" id="sc">
+        <div class="section-header">
+          <div class="section-badge alt">✓</div>
+          <div class="section-meta">
+            <div class="section-tag">Before You Share</div>
+            <div class="section-title">The Read-Back Test</div>
+            <div class="section-desc">Would a new teammate build a list from this — or come back with a question? If they'd ask, fix it first.</div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="checklist">
+            <label class="check-item" id="ck1"><input type="checkbox" onchange="checkItem(this)"> <span>All 6 sections are filled in — no section is blank or says "TBD"</span></label>
+            <label class="check-item" id="ck2"><input type="checkbox" onchange="checkItem(this)"> <span>Firmographics use specific numbers — not "medium-sized" or "growing"</span></label>
+            <label class="check-item" id="ck3"><input type="checkbox" onchange="checkItem(this)"> <span>At least 3 technographic tools listed — each with a one-line signal rationale</span></label>
+            <label class="check-item" id="ck4"><input type="checkbox" onchange="checkItem(this)"> <span>At least 2 buying triggers — each with a reason it creates urgency</span></label>
+            <label class="check-item" id="ck5"><input type="checkbox" onchange="checkItem(this)"> <span>Pain is in customer language — plain words, passes the 5pm Thursday test</span></label>
+            <label class="check-item" id="ck6"><input type="checkbox" onchange="checkItem(this)"> <span>Persona names a specific job title — not "decision maker" or "stakeholder"</span></label>
+            <label class="check-item" id="ck7"><input type="checkbox" onchange="checkItem(this)"> <span>Disqualifiers have 2+ entries — each follows the "If X → skip" format</span></label>
+          </div>
+          <div class="field-divider"></div>
+          <div class="field">
+            <label class="field-label">One question a new SDR might still ask after reading your ICP</label>
+            <div class="field-hint">Write it here — then go fix it before sharing</div>
+            <textarea class="fi" placeholder="e.g. What counts as 'too big'? The disqualifier doesn't have a number attached…" oninput="updateProgress()"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HOMEWORK ───────────────────────────────────────────────────────── -->
+      <div class="section-block" id="hw">
+        <div class="section-header">
+          <div class="section-badge alt" style="font-size:11px;font-weight:800;color:var(--lime);border-color:rgba(220,255,99,0.3);background:rgba(220,255,99,0.08);">HW</div>
+          <div class="section-meta">
+            <div class="section-tag">Due Before Session 2</div>
+            <div class="section-title">Stress-Test Your ICP</div>
+            <div class="section-desc">Find 3 real companies. Run each through your completed ICP. Bring your verdicts to Session 2 — they become rows 1–3 of your Clay table.</div>
+          </div>
+        </div>
+        <div class="section-body">
+
+          <div>
+            <div class="hw-tag hw-fit">Clear Fit</div>
+            <div class="field-row" style="margin-bottom:12px;">
+              <div class="field"><label class="field-label">Company name</label><input class="fi" placeholder="e.g. Fieldsync" oninput="updateProgress()"></div>
+              <div class="field"><label class="field-label">URL</label><input class="fi" placeholder="e.g. fieldsync.io" oninput="updateProgress()"></div>
+            </div>
+            <div class="field"><label class="field-label">Why it fits (2–3 sentences)</label><textarea class="fi" placeholder="Reference your firmographics, triggers, or technographics specifically…" oninput="updateProgress()"></textarea></div>
+          </div>
+
+          <div class="field-divider"></div>
+
+          <div>
+            <div class="hw-tag hw-nofit">Clear No-Fit</div>
+            <div class="field-row" style="margin-bottom:12px;">
+              <div class="field"><label class="field-label">Company name</label><input class="fi" placeholder="e.g. Acme Corp" oninput="updateProgress()"></div>
+              <div class="field"><label class="field-label">URL</label><input class="fi" placeholder="e.g. acmecorp.com" oninput="updateProgress()"></div>
+            </div>
+            <div class="field"><label class="field-label">Why it doesn't fit (2–3 sentences)</label><textarea class="fi" placeholder="Which disqualifier applies? What exactly is wrong — size, industry, stage?" oninput="updateProgress()"></textarea></div>
+          </div>
+
+          <div class="field-divider"></div>
+
+          <div>
+            <div class="hw-tag hw-amb">Ambiguous</div>
+            <div class="field-row" style="margin-bottom:12px;">
+              <div class="field"><label class="field-label">Company name</label><input class="fi" placeholder="e.g. Loopline HQ" oninput="updateProgress()"></div>
+              <div class="field"><label class="field-label">URL</label><input class="fi" placeholder="e.g. looplinehq.com" oninput="updateProgress()"></div>
+            </div>
+            <div class="field"><label class="field-label">What makes it unclear — and what would resolve it?</label><textarea class="fi" placeholder="e.g. Headcount looks right but I can't tell if they use Slack. If they do, it's probably a fit…" oninput="updateProgress()"></textarea></div>
+          </div>
+
+        </div>
+
+        <!-- STRETCH -->
+        <div class="stretch" style="margin-top:20px;">
+          <div class="stretch-title">Stretch Goals — fast finishers only</div>
+          <div class="field" style="margin-bottom:14px;">
+            <label class="field-label">3 real lookalike companies that perfectly match your ICP</label>
+            <div class="field-hint" style="margin-bottom:8px;">These become your Clay seed rows in Session 2</div>
+            <input class="fi" placeholder="Company 1: name + one-line why it fits" oninput="updateProgress()" style="margin-bottom:8px;">
+            <input class="fi" placeholder="Company 2: name + one-line why it fits" oninput="updateProgress()" style="margin-bottom:8px;">
+            <input class="fi" placeholder="Company 3: name + one-line why it fits" oninput="updateProgress()">
+          </div>
+          <div class="field">
+            <label class="field-label">The anti-ICP</label>
+            <div class="field-hint">Who looks perfect but always wastes your time? One paragraph.</div>
+            <textarea class="fi" placeholder="The customer type that burns the most pipeline for the least return is…" oninput="updateProgress()"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── REFERENCE ──────────────────────────────────────────────────────── -->
+      <div class="section-block">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">Quick Reference — Key Concepts</div>
+        <div class="ref-grid">
+          <div class="ref-card"><div class="ref-term">ICP</div><div class="ref-def">Company + person most likely to buy, get value, and stay. A filter, not a wish list.</div></div>
+          <div class="ref-card"><div class="ref-term">Firmographics</div><div class="ref-def">Headcount, ARR, stage, industry, geography. Always use specific numbers.</div></div>
+          <div class="ref-card"><div class="ref-term">Technographics</div><div class="ref-def">Tools they already use. Each signals readiness and workflow maturity.</div></div>
+          <div class="ref-card"><div class="ref-term">Buying Trigger</div><div class="ref-def">An event that creates urgency: new hire, funding, headcount jump.</div></div>
+          <div class="ref-card"><div class="ref-term">Pain</div><div class="ref-def">The problem in the customer's own words. If it sounds like copy — rewrite it.</div></div>
+          <div class="ref-card"><div class="ref-term">Persona</div><div class="ref-def">Specific title + seniority + responsibility. Must be searchable in Clay.</div></div>
+          <div class="ref-card"><div class="ref-term">Disqualifier</div><div class="ref-def">A rule that removes near-misses. As valuable as a qualifier.</div></div>
+          <div class="ref-card"><div class="ref-term">5pm Thursday test</div><div class="ref-def">Read pain aloud. Landing page? Rewrite as frustrated plain English.</div></div>
+          <div class="ref-card"><div class="ref-term">ICP read-back</div><div class="ref-def">A new SDR acts on this without follow-up questions. If they can't — fix it.</div></div>
+        </div>
+
+        <!-- Footer line -->
+        <div style="margin-top:32px;padding-top:20px;border-top:1px solid var(--mint-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><path d="M16 4C9.37 4 4 9.37 4 16C4 22.63 9.37 28 16 28V20H16C12.69 20 10 17.31 10 14C10 10.69 12.69 8 16 8V4Z" fill="#00FFB5"/><path d="M16 4L28 4L28 16L16 4Z" fill="#00FFB5"/><rect x="20" y="20" width="8" height="4" fill="#00FFB5"/><rect x="16" y="20" width="4" height="8" fill="#00FFB5"/></svg>
+            <span style="font-size:13px;font-weight:700;color:var(--soft);">Think<span style="color:var(--mint);">Growth</span></span>
+          </div>
+          <span style="font-size:11.5px;color:var(--muted);">GTM Foundations · Week 1, Session 1 · Think Beyond Limits</span>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+
+    <!-- SAVE BAR -->
+    <div class="save-bar">
+      <div class="save-status">
+        <div class="save-pulse"></div>
+        <span id="status-text">Start filling in your ICP to track progress</span>
+      </div>
+      <div class="save-btns">
+        <button class="btn btn-ghost" onclick="copyAll()">Copy answers</button>
+        <button class="btn btn-mint" onclick="exportPDF()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export PDF
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function setActive(el) {
+  event.preventDefault();
+  const id = el.getAttribute('href').replace('#','');
+  const target = document.getElementById(id);
+  if (target) target.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── PROGRESS ──────────────────────────────────────────────────────────────────
+function updateProgress() {
+  const inputs = document.querySelectorAll('.content input.fi:not([type="checkbox"]), .content textarea.fi');
+  const total = inputs.length;
+  const filled = Array.from(inputs).filter(i => i.value.trim().length > 2).length;
+  const pct = Math.round((filled / total) * 100);
+
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('pct-label').textContent = pct + '%';
+
+  const msg =
+    pct < 10  ? 'Start filling in your ICP to track progress' :
+    pct < 30  ? `${pct}% — keep going, every section matters` :
+    pct < 55  ? `${pct}% — building something solid` :
+    pct < 80  ? `${pct}% — almost there, nearly ready` :
+                `🎉 ${pct}% — looking good, nearly ready to share!`;
+
+  document.getElementById('prog-detail').textContent = msg;
+  document.getElementById('status-text').textContent = msg;
+
+  // Mark nav items as done based on section fill
+  updateNavDone();
+  autoSave();
+}
+
+function updateNavDone() {
+  const sectionMap = {
+    's1': ['#s1 input.fi'],
+    's2': ['#s2 input.fi'],
+    's3': ['#s3 input.fi'],
+    's4': ['#s4 input.fi, #s4 textarea.fi'],
+    's5': ['#s5 input.fi, #s5 textarea.fi'],
+    's6': ['#s6 input.fi'],
+    'sc': ['#sc textarea.fi'],
+    'hw': ['#hw input.fi, #hw textarea.fi'],
+  };
+  Object.entries(sectionMap).forEach(([sid, selectors]) => {
+    const inputs = document.querySelectorAll(selectors.join(','));
+    const filled = Array.from(inputs).filter(i => i.value.trim().length > 1).length;
+    const navLink = document.querySelector(`.nav-item[href="#${sid}"]`);
+    if (navLink) navLink.classList.toggle('done', filled >= Math.ceil(inputs.length * 0.5));
+  });
+}
+
+function checkItem(el) {
+  el.closest('.check-item').classList.toggle('done', el.checked);
+}
+
+// ── COVER SYNC ────────────────────────────────────────────────────────────────
+function syncCover() {
+  const name    = document.getElementById('s_name').value    || '—';
+  const date    = document.getElementById('s_date').value    || '—';
+  const company = document.getElementById('s_company').value || 'Stackably';
+  document.getElementById('pdf-name').textContent    = name;
+  document.getElementById('pdf-date').textContent    = date;
+  document.getElementById('pdf-company').textContent = company;
+}
+syncCover();
+
+// ── EXPORT PDF (window.print with @media print) ───────────────────────────────
+function exportPDF() {
+  syncCover();
+  // Small delay so DOM updates flush
+  setTimeout(() => window.print(), 80);
+}
+
+// ── SAVE / RESTORE ────────────────────────────────────────────────────────────
+let saveTimer = null;
+function autoSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveLocal, 1200);
+}
+
+function saveLocal() {
+  const data = {};
+  document.querySelectorAll('input, textarea').forEach((el, i) => {
+    if (el.type === 'checkbox') data['cb_'+i] = el.checked;
+    else if (el.value) data['f_'+i] = el.value;
+  });
+  try { localStorage.setItem('tg_icp_v2', JSON.stringify(data)); } catch(e) {}
+}
+
+function restoreLocal() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('tg_icp_v2') || '{}');
+    if (!Object.keys(saved).length) return;
+    const inputs = document.querySelectorAll('input, textarea');
+    inputs.forEach((el, i) => {
+      if (el.type === 'checkbox' && saved['cb_'+i] !== undefined) {
+        el.checked = saved['cb_'+i];
+        el.closest('.check-item')?.classList.toggle('done', el.checked);
+      } else if (saved['f_'+i]) {
+        el.value = saved['f_'+i];
+      }
+    });
+    syncCover();
+    updateProgress();
+  } catch(e) {}
+}
+restoreLocal();
+
+// ── CLEAR ─────────────────────────────────────────────────────────────────────
+function clearAll() {
+  if (!confirm('Clear all your answers? This cannot be undone.')) return;
+  document.querySelectorAll('input.fi, textarea.fi').forEach(el => el.value = '');
+  document.querySelectorAll('input[type=checkbox]').forEach(el => { el.checked = false; });
+  document.querySelectorAll('.check-item').forEach(el => el.classList.remove('done'));
+  document.getElementById('s_company').value = 'Stackably';
+  try { localStorage.removeItem('tg_icp_v2'); } catch(e) {}
+  updateProgress(); syncCover();
+}
+
+// ── COPY ALL ──────────────────────────────────────────────────────────────────
+function copyAll() {
+  let out = 'GTM FOUNDATIONS — ICP BRIEF\n' + '='.repeat(36) + '\n';
+  out += `Student: ${document.getElementById('s_name').value || '—'}\n`;
+  out += `Date: ${document.getElementById('s_date').value || '—'}\n`;
+  out += `Company: ${document.getElementById('s_company').value || '—'}\n\n`;
+
+  document.querySelectorAll('.section-block').forEach(block => {
+    const title = block.querySelector('.section-title');
+    if (title) out += '\n' + title.textContent.toUpperCase() + '\n' + '-'.repeat(28) + '\n';
+    block.querySelectorAll('input.fi, textarea.fi').forEach(el => {
+      if (!el.value.trim()) return;
+      const lbl = el.closest('.field')?.querySelector('label')?.textContent?.trim() || '';
+      out += (lbl ? lbl + ': ' : '') + el.value.trim() + '\n';
+    });
+  });
+
+  navigator.clipboard.writeText(out).then(() => {
+    const orig = document.getElementById('status-text').textContent;
+    document.getElementById('status-text').textContent = '✓ Copied to clipboard!';
+    setTimeout(() => document.getElementById('status-text').textContent = orig, 2500);
+  }).catch(() => alert('Copy failed — please copy manually.'));
+}
+
+// ── INTERSECTION OBSERVER (active nav tracking) ───────────────────────────────
+const sections = document.querySelectorAll('[id^="s"], [id="sc"], [id="hw"]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      document.querySelectorAll('.nav-item').forEach(n => {
+        n.classList.toggle('active', n.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin:'-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
